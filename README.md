@@ -3,7 +3,7 @@ AdverseEffectsPredictor
 
 ##Description
 
-This is a database and tool which can be used to store (adverse) side-effect/chemical structure relationships and use this information in the prediction of side-effects in other compounds based on the comparison of pre-defined binary fingerprints and related statistics.
+This is a database and prediction algorithm which can be used to store (adverse) side-effect/chemical structure relationships and use this information in the prediction of side-effects in other compounds based on the comparison of pre-defined binary fingerprints and related statistics.
 
 ##Where does the data originate from?
 
