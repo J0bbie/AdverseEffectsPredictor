@@ -1,26 +1,30 @@
-bitPredict
+AdverseEffectsPredictor
 ==========
 
 ##Description
 
-This database and tool can be used to store side-effect/chemical structure relationships and use this information in the prediction of side-effects in other compounds based on comparing pre-defined binary fingerprints.
+This is a database and tool which can be used to store (adverse) side-effect/chemical structure relationships and use this information in the prediction of side-effects in other compounds based on the comparison of pre-defined binary fingerprints and related statistics.
 
-##What data is used?
+##Where does the data originate from?
 
-Data is used from [SIDER 2](http://sideeffects.embl.de/) (Kuhn M, Campillos M, Letunic I, Jensen LJ, Bork P.
-A side effect resource to capture phenotypic effects of drugs. Mol Syst Biol. 2010;6:343. Epub 2010 Jan 19.)
+Data from the [SIDER 2](http://sideeffects.embl.de/) (Kuhn M, Campillos M, Letunic I, Jensen LJ, Bork P.
+A side effect resource to capture phenotypic effects of drugs. Mol Syst Biol. 2010;6:343. Epub 2010 Jan 19.) database is used as a test-set for the compound-adverse effect relationship.
 
+Additional information is gathered from:
+  - asd
+  - asd
+  - asd
 
-
-##Fingerprints used
+##Predictors used
 The binary fingerprints which are deduced from the compounds and used in the prediction of side-effects are the following:
 - Chemical groups
 - logP  (Partition coefficient)
 - Molecular mass
 - Protein targets
 - Metabolite forming
+- Anatomical Therapeutic Chemical Classification System (ATC) code
 
-Gene expression data (Omics) can be added to allow for additional evidence.
+Gene expression data (Omics) is also used as an additional resource in the prediction.
 
 ##Installation/setup
 
