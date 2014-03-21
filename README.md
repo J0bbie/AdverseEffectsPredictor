@@ -7,8 +7,7 @@ This is a database and prediction algorithm which can be used to store (adverse)
 
 ##Where does the data originate from?
 
-Data from the [SIDER 2](http://sideeffects.embl.de/) (Kuhn M, Campillos M, Letunic I, Jensen LJ, Bork P.
-A side effect resource to capture phenotypic effects of drugs. Mol Syst Biol. 2010;6:343. Epub 2010 Jan 19.) database is used as a test-set for the compound-adverse effect relationship.
+Data from the [SIDER 2](http://sideeffects.embl.de/) database is used as a test-set for the compound-adverse effect relationship.
 
 Additional information is gathered from:
   - asd
