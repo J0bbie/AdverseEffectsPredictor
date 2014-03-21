@@ -17,6 +17,8 @@ The binary fingerprints which are deduced from the compounds and used in the pre
 - Chemical groups
 - logP  (Partition coefficient)
 - Molecular mass
+- Protein targets
+- Metabolite forming
 
 Gene expression data (Omics) can be added to allow for additional evidence.
 
