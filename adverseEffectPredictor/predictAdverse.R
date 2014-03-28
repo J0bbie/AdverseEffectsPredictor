@@ -1,4 +1,4 @@
-#Author:	Job van Riet
+#Author:  Job van Riet
 #Date of  creation:	28-3-14
 #Date of modification:	28-3-14
 #Version:	1.0
@@ -38,16 +38,7 @@ source(paste(userParameters$scriptDir,"functions_adverseCorrelation.R",sep="/"))
 cat("\nLoading required packages.\n")
 
 #Create a list of the mandatory packages needed for this pipeline.
-pkgs <- c( "limma", "ALL","bioDist", "gplots",
-           "annotate", "arrayQualityMetrics",
-           switch(userParameters$species,
-                  Human = pkgs <- c("org.Hs.eg.db"),
-                  Mouse = pkgs <- c("org.Mm.eg.db"),
-                  Rat =   pkgs <- c("org.Rn.eg.db") 
-           ), "lumi",
-           userParameters$lib.mapping,
-           userParameters$lib.All.mapping
-)
+pkgs <- c( "bioDist", "fingerprint" ,"gplots", "Category", "pcaMethods")
 
 #Install any missing R libraries if needed
 loadPackages(pkgs)
@@ -55,7 +46,7 @@ loadPackages(pkgs)
 cat("\nRequired packages succesfully loaded.\n")
 
 ##################################################################################
-##     					Load the file containing the compounds 		 			##
+##     	          Load the file containing the compounds 			##
 ##################################################################################
 
 compFile = paste(userParameters$outputDir, userParameters$compoundList, sep = "")
@@ -63,56 +54,56 @@ compFile = paste(userParameters$outputDir, userParameters$compoundList, sep = ""
 cat("\nReading the compounds properties of all similar compounds:", compFile, "\n", sep="")
 
 similarCompounds <- read.table(compFile,
-                          header=T,  
-                          stringsAsFactors = F,
-                          sep='\t',
-                          quote="")
+                               header=T,  
+                               stringsAsFactors = F,
+                               sep='\t',
+                               quote="")
 
 cat("\nCompounds successfully loaded.\n")
 
 ##################################################################################
-##     		Load the file containing the fingerprints of the structures	 		##
+##     	Load the file containing the fingerprints of the structures	 	##
 ##################################################################################
 
 if(userParamaters$useChemFingerPrints){
-	chemFingerFile = paste(userParameters$outputDir, userParameters$chemFingerPrintFile, sep = "")
-
-	cat("\nReading the chemical fingerprints of all the similar compounds:", chemFingerFile, "\n", sep="")
-
-	similarCompounds <- read.table(compFile,
-							  header=T,  
-							  stringsAsFactors = F,
-							  sep='\t',
-							  quote="")
-
-	cat("\nChemical fingerprints successfully loaded.\n")
+          chemFingerFile = paste(userParameters$outputDir, userParameters$chemFingerPrintFile, sep = "")
+          
+          cat("\nReading the chemical fingerprints of all the similar compounds:", chemFingerFile, "\n", sep="")
+          
+          similarCompounds <- read.table(compFile,
+                                         header=T,  
+                                         stringsAsFactors = F,
+                                         sep='\t',
+                                         quote="")
+          
+          cat("\nChemical fingerprints successfully loaded.\n")
 }else{
-	cat("\nSkipping correlation based on chemical fingerprints\n")
+          cat("\nSkipping correlation based on chemical fingerprints\n")
 }
-						  
+
 ##################################################################################
-##        Load the files containing the gene-expression profiles 				##
+##        Load the files containing the gene-expression profiles 		##
 ##################################################################################
 
 #If normalization is true:
 if(userParameters$useOmics){
-	omicsFile = paste(userParameters$outputDir, userParameters$omicsFile, sep = "")
-
-	cat("\nReading the gene-expressions profiles of all similar compounds:", omicsFile, "\n", sep="")
-
-	description <- read.table(omicsFile,
-							  header=T,  
-							  stringsAsFactors = F,
-							  sep='\t',
-							  quote="")
-
-	cat("\nGene expression profiles successfully loaded.\n")
+          omicsFile = paste(userParameters$outputDir, userParameters$omicsFile, sep = "")
+          
+          cat("\nReading the gene-expressions profiles of all similar compounds:", omicsFile, "\n", sep="")
+          
+          description <- read.table(omicsFile,
+                                    header=T,  
+                                    stringsAsFactors = F,
+                                    sep='\t',
+                                    quote="")
+          
+          cat("\nGene expression profiles successfully loaded.\n")
 }else{
-	cat("\nSkipping correlation based on gene-expression profiles.\n")
+          cat("\nSkipping correlation based on gene-expression profiles.\n")
 }
 
 ##################################################################################
-##        Correlate compounds based on the chemical fingerprints only			##
+##        Correlate compounds based on the chemical fingerprints only		##
 ##################################################################################
 
 
