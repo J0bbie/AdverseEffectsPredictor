@@ -3,6 +3,7 @@ AdverseEffectsPredictor
 
 ##Description
 
+<<<<<<< HEAD
 This is a database and prediction/analysis algorithm which can be used to store (adverse) side-effect/chemical structure relationships and use this information in the prediction of side-effects in other compounds based on the comparison of binary chemical fingerprints, gene expression omics and related statistics.
 
 ##Data used in the prediction/analysis
@@ -37,6 +38,15 @@ These are the files that were used for the creation of the initial DB, read by t
 -	TG-GATEs
 	-	Add 
 	-	Add
+=======
+This is a database and prediction algorithm which can be used to store (adverse) side-effect/chemical structure relationships and use this information in the prediction of side-effects in other compounds based on the comparison of pre-defined binary fingerprints and related statistics.
+
+##Where does the data originate from?
+
+Data from the [SIDER 2](http://sideeffects.embl.de/) database is used as a test-set for the compound-adverse effect relationship. Additional compound-adverse effect relationships are also gathered from the [FAERS / FDA Adverse Event Reporting System](http://www.fda.gov/Drugs/GuidanceComplianceRegulatoryInformation/Surveillance/AdverseDrugEffects/default.htm).
+
+The two data-sources are used to create a test-set of compound-adverse effect relationships. Omics data from additional (in-house) toxicological sources can also be used to further strengthen/weaken a prediction.
+>>>>>>> 11030f5bbf37ff76efd190942a346db1afaf235e
 
 ##Predictors used
 The binary fingerprints which are deduced from the compounds and used in the prediction of side-effects are the following:
@@ -45,7 +55,7 @@ The binary fingerprints which are deduced from the compounds and used in the pre
 - Molecular mass
 - Protein targets
 - Metabolite forming
-- Anatomical Therapeutic Chemical Classification System (ATC) code
+- Quantum mechanics
 
 Gene expression data (Omics) is also used as an additional resource in the prediction.
 
