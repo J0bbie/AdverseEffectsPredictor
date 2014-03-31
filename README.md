@@ -24,21 +24,21 @@ The following data-sources are used:
 	
 ##Initial data files
 
+The compounds as they were available in ChEMBL were used as the reference compounds on which the adverse effects were linked, see /sql/fillCompounds for these compounds. (As these contain SMILES and identifiers from other databases)
+
 These are the files that were used for the creation of the initial DB, read by the scripts in /writeData2DB/
+-	ChEMBL
+	-	The MySQL version was downloaded and relevant information to the compounds was extracted and used in our own database.
 -	FAERS *(XML formatted)*
 	-	ADR13Q1_FORMATTED.xml
 -	SIDER2	
 	-	*(17-10-2012)*
-		-	adverse_effects_raw.tsv
-		-	indications_raw.tsv
-		-	label_mapping.tsv
 		-	meddra_adverse_effects.tsv
 		-	meddra_freq_parsed.tsv
 -	TG-GATEs
-	-	Add 
-	-	Add
--	ChEMBL
-	-	Tab-delimited files were made of the compounds and structures present in the ChEMBL database.
+	-	All data from the files were converted into an MySQL schema, linked on the compounds provided by ChEMBL.
+-	PROTECT ADR
+	-	Final repository_version published on PROTECT eRoom 23 Sep 2013_DLP 31 Dec 2012
 	
 ##Predictors used
 The binary fingerprints which are deduced from the compounds and used in the prediction of side-effects are the following:
@@ -62,7 +62,7 @@ Gene expression data (Omics) is also used as an additional resource in the predi
 	
 ##Examples
 
-Examples are added in the /examples/ folder.
+Example data can be found in the /examples/ folder.
 
 ##Impressions
 

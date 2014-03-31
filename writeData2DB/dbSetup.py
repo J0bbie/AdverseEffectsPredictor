@@ -8,7 +8,7 @@
 # This file houses the functions to write the various data to the database.
 
 # Import user specified settings
-import toxicData2DB.settings as s
+import writeData2DB.settings as s
 
 # Import MySQL functions
 import pymysql
@@ -51,6 +51,9 @@ class dbConnection:
     # Rollback DB (On error for instance)
     def rollback(self):
         self.connection.rollback()
+        
+    def query(self):
+        self.cursor.execute()
     
     ##########################
     #    Write2DB methods    #
@@ -69,7 +72,7 @@ class dbConnection:
         # Return the ID of the adverse effect
         return(idAdverseEffect)
         
-    # Try to find if the adverse effect already exists and retrieve that ID or create a new adverse effect and return the newly create (Auto-increment) key
+    # Try to find if the meDRA term already exists and retrieve that ID or create a new meDRA term and return the newly create (Auto-increment) key
     def createGetMedRA(self, name, conceptType="NULL", idUMLS="NULL"):
         self.cursor.execute("SELECT idMedRA FROM tMedRA WHERE name LIKE %s;", ("%" + name + "%"))
         idMedRA = self.cursor.fetchone()
@@ -79,5 +82,18 @@ class dbConnection:
             self.cursor.execute("INSERT INTO tMedRA (name, conceptType, idUMLS) VALUES ( %s, %s, %s);", name, conceptType, idUMLS)
             idMedRA = self.connection.insert_id()
             
-        # Return the ID of the adverse effect
+        # Return the ID of the meDRA term
         return(idMedRA)
+
+    # Try to find if the compound already exists and retrieve that ID or create a new compound and return the newly create (Auto-increment) key
+    def createGetCompound(self, name, description="NULL"):
+        self.cursor.execute("SELECT c.idCompound FROM compoundDB.tCompound as c JOIN compoundDB.tSynonyms as s WHERE c.name LIKE %s OR s.name LIKE %s ", ("%" + name + "%"), ("%" + name + "%"))
+        idCompound = self.cursor.fetchone()
+        
+        # Create if not already existing
+        if not idCompound:
+            self.cursor.execute("INSERT INTO compoundDB.tCompound (name) VALUES ( %s);", name)
+            idCompound = self.connection.insert_id()
+            
+        # Return the ID of the compound
+        return(idCompound)

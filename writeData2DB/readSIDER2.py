@@ -7,8 +7,17 @@
 # Function:
 # This script can read the SIDER2 files and upload the data to the DB
 
+#Import command line parser
 from optparse import OptionParser
+
+#Import os options (read dir/extensions)
 import os
+
+# Import user specified settings
+import writeData2DB.settings as s
+
+# Import MySQL functions
+import pymysql
 
 # Get the command line parameters
 parser = OptionParser()
@@ -21,11 +30,47 @@ arguments = vars(options)
 
 arguments['inputDirectory'] = "C:/Users/rietjv/AppData/Local/My Local Documents/SIDER2/originalFiles/"
 
+#######################################################
+#                       Exceptions                    #
+#######################################################
+
+#Exception if one of the five required files is not present in the input directory
+class reqFileException(Exception):
+    pass
+
+#Make the connection to the DB, using the settings in the setting.py file
+connection = pymysql.connect(host=s.databaseSettings['HOST'],
+                                     port=s.databaseSettings['PORT'],
+                                     user=s.databaseSettings['USER'],
+                                     passwd=s.databaseSettings['PASSWORD'],
+                                     db=s.databaseSettings['SCHEMA'],
+                                     autocommit = False)
+# Create cursor to handle requests
+cursor = connection.cursor()
+
+#######################################################
+#                   File searching                    #
+#######################################################
+
 #Locate the files in the directory
 for file in os.listdir(arguments['inputDirectory']):
     if file.endswith(".tsv"):
-        if(file == "label_mapping.tsv"):
-            print(file)
+        try:
+            #First find the label_mapping.tsv file as this contains the compounds (brand name + generic names and the label identifier used in the other files)
+            if not(file == "label_mapping.tsv"):
+                raise reqFileException("Could not locate label_mapping.tsv in directory: "+arguments['inputDirectory'])
+            else:
+                print("goo")
+        #If one of the required files could not be located
+        except reqFileException:
+            #Rollback the database to prevent half-complete data inserts
+            connection.rollback()
+
+
+
+
+
+
 
 
 #Write the label_mapping.tsv to the DB
