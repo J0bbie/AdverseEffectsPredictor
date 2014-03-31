@@ -9,8 +9,6 @@ This is a database and prediction/analysis algorithm which can be used to store 
 
 The following data-sources are used:
 
--	[FAERS](http://www.fda.gov/Drugs/GuidanceComplianceRegulatoryInformation/Surveillance/AdverseDrugEffects/ucm082193.htm)
-	-	Compound-Adverse Effect relationships
 -	[SIDER2](http://sideeffects.embl.de/)
 	-	Compound-Adverse Effect relationships
 -	[TG-Gates](ftp://ftp.biosciencedbc.jp/archive/open-tggates/LATEST/README_e.html)
@@ -29,8 +27,6 @@ The compounds as they were available in ChEMBL were used as the reference compou
 These are the files that were used for the creation of the initial DB, read by the scripts in /writeData2DB/
 -	ChEMBL
 	-	The MySQL version was downloaded and relevant information to the compounds was extracted and used in our own database.
--	FAERS *(XML formatted)*
-	-	ADR13Q1_FORMATTED.xml
 -	SIDER2	
 	-	*(17-10-2012)*
 		-	meddra_adverse_effects.tsv
