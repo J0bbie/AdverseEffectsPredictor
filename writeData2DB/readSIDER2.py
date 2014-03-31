@@ -57,21 +57,14 @@ for file in os.listdir(arguments['inputDirectory']):
     if file.endswith(".tsv"):
         try:
             #First find the label_mapping.tsv file as this contains the compounds (brand name + generic names and the label identifier used in the other files)
-            if not(file == "label_mapping.tsv"):
-                raise reqFileException("Could not locate label_mapping.tsv in directory: "+arguments['inputDirectory'])
+            if(file == "meddra_adverse_effects.tsv"):
+                print("foo")
             else:
-                print("goo")
+                raise reqFileException("Could not locate label_mapping.tsv in directory: "+arguments['inputDirectory'])
         #If one of the required files could not be located
         except reqFileException:
             #Rollback the database to prevent half-complete data inserts
             connection.rollback()
-
-
-
-
-
-
-
 
 #Write the label_mapping.tsv to the DB
 #Contains the compound labels used in the SIDER2 DB
