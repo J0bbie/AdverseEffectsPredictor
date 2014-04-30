@@ -1,4 +1,4 @@
-# Author(s):    Job van Riet + Data from SIDER2/ChEMBL
+	# Author(s):    Job van Riet + Data from SIDER2/ChEMBL
 # Date of  creation:    27-3-14
 # Date of modification:    Initial version
 # Version:    1.0
@@ -28,7 +28,7 @@ parser.add_argument("-i", "--inputDirectory", dest="inputDirectory", default=os.
                   help="Give the input directory containing the label_mapping, meddra_adverse_effects and meddra_freq_parsed files from SIDER2 in .tsv format.")
 
 # If the files has different names, supply them with these parameters
-parser.add_argument("-l", "--labelMapping", dest="inputDirectory", default="label_mapping.tsv",
+parser.add_argument("-l", "--labelMapping", dest="labelMapping", default="label_mapping.tsv",
                   help="Give file name of the label_mapping.tsv if different.")
 
 parser.add_argument("-a", "--adverseEffect", dest="adverseEffect", default="meddra_adverse_effects.tsv",
@@ -38,23 +38,24 @@ parser.add_argument("-f", "--adverseFreq", dest="adverseFreq", default="meddra_f
                   help="Give file name of the meddra_freq_parsed.tsv if different.")
 
 # Add a mutually exclusive group to overwrite/append/skip data that is already found in the SIDER2 DB
-CRUDGroup = parser.add_mutually_exclusive_group()
+CRUDGroup = parser.add_mutually_exclusive_group(required=True)
 CRUDGroup.add_argument('--overwrite', action='store_true')
 CRUDGroup.add_argument('--skip', action='store_true')
-CRUDGroup.add_argument('--append', action='store_true')
+CRUDGroup.add_argument('--append', action='store_true') #Standard option
 
 #Parse the options
 args = parser.parse_args()
 arguments = vars(args)
 
-#print(arguments['inputDirectory'])
+#Debug arguments list
+#print(arguments)
 
 #######################################################
 #                       Exceptions                    #
 #######################################################
 
-#Exception if one of the five required files is not present in the input directory
-class reqFileException(Exception):
+#Exception if there is a problem linking records from the file together (missing/incorrect STITCH etc.)
+class noRelationException(Exception):
     pass
 
 #######################################################
@@ -63,55 +64,65 @@ class reqFileException(Exception):
 
 # Make the connection to the MYSQL server, using the settings in the setting.py file
 # The SCHEMAS will be used to query to needed database
-connection2SIDER = pymysql.connect(host=s.databaseSettings['HOST'],
-                                     port=s.databaseSettings['PORT'],
-                                     user=s.databaseSettings['USER'],
-                                     passwd=s.databaseSettings['PASSWORD'],
-                                     db=s.databaseSettings['SCHEMASIDER'],
-                                     autocommit = False)
-# Create cursor to handle requests
-cursor= connection.cursor()
+dbCon = pymysql.connect(host=s.databaseSettings['HOST'],
+                                   port=s.databaseSettings['PORT'],
+                                   user=s.databaseSettings['USER'],
+                                   passwd=s.databaseSettings['PASSWORD'],
+                                   autocommit = False)
+# Create dbCursor to handle requests
+dbCursor= connection.dbCursor()
 
 #######################################################
-#                   File searching                    #
+#                   File handling                     #
 #######################################################
 
-#Open the files in the correct order (Label_mapping -> meddra_adverse_effects -> meddra_freq_parsed)
-try:
-    #First find the label_mapping.tsv file as this contains the compounds (brand name + generic names and the label identifier + STITCH ID used in the other files)
-    if(file == "label_mapping.tsv"):
-        filePath = '/'.join(arguments['inputDirectory'], "label_mapping.tsv")
-        #Read the contents 
-        writeLabelMapping(filePath)
-    else:
-        raise reqFileException("Could not locate label_mapping.tsv in directory: "+arguments['inputDirectory'])
-#If one of the required files could not be located
-except reqFileException:
-    #Rollback the database to prevent half-complete data inserts
-    connection.rollback()
+# Try to make a file handler for all the required files
 
-#Write the label_mapping.tsv to the DB
-#Contains the compound labels used in the SIDER2 DB
-def writeLabelMapping(filePath):
-    print("foo")
+# Create filehandlers for the required files
+# Open label mapping (contains the compounds (brand name + generic names and the label identifier + STITCH ID used in the other files)
+labelMappingFile = open(os.path.join(arguments['inputDirectory'], arguments['labelMapping']),"r")
+# Open medDRA adverse to get all the adverse effects for each compound (linked on STITCH ids)
+meddraAdverseFile = open(os.path.join(arguments['inputDirectory'], arguments['adverseEffect']),"r")
+# Open medDRA frequency file containing the frequencies of the adverse effects (linked on STITCH id)
+meddraFreqFile = open(os.path.join(arguments['inputDirectory'], arguments['adverseFreq']),"r")
+ 
+#######################################################
+#                   File reading                      #
+#######################################################
+
+# The correct way to read is: label_mapping -> meddra_adverse_effects -> meddra_freq_parsed
+writeLabelMapping(dbCon, dbCursor, arguments['CRUDGroup'], labelMappingFile)
+writeMeddraAdverseEffects(dbCon, dbCursor, arguments['CRUDGroup'], meddraAdverseFile)
+writeMeddraFreqParsed(dbCon, dbCursor, arguments['CRUDGroup'], meddraFreqFile)
+
+# Write the contents from label_mapping.tsv to the DB, according to the set CRUD paramater, skip/append/overwrite identical records
+def writeLabelMapping(dbCon, dbCursor, CRUDOption, file):
+    for line in file:
+        # Strip and split the line on tab and put the content in 7 variables
+        (brandNames, substanceNames, STITCHMap, flatSTITCH, stereoSTITCH, urlEvidence, labelIdentifier) = line.strip().split('\t')
+        
+        # Try to find the compound that was used for this record (If a combination is used, multiple idCompound will be returned)
+        # Use the subtance names names as they refer to the individual compounds
+        idCompoundList = getCreateCompound(dbCon, dbCursor, substanceNames, STITCHMap)
+        
+        # Create the label record (based on CRUD skip/append/overwrite existing one)
+        getCreateLabelRecord()
     
 #Write the meddra_adverse_effects.tsv to the DB
-def meddraAdverseEffects(filePath):
+def writeMeddraAdverseEffects(dbCon, dbCursor, CRUDOption, file):
     print("foo")
     
 #Write the meddra_freq_parsed.tsv to the DB
-def meddraFreqParsed(filePath):
+def writeMeddraFreqParsed(dbCon, dbCursor, CRUDOption, file):
     print("foo")
     
 # Try to retrieve the id of the compound from the compoundDB, else create it.
 # Searching can be done with synonyms (brand+generic names etc.)
-def getCreateCompound(connection, cursor, compoundNames):
-    sqlQuery = "SELECT idCompound FROM normdb.tCompound as c LEFT JOIN tCompoundSynonyms ON c.idCompound = tCompoundSynonyms.idCompound WHERE %s OR %s LIMIT 1" %
-    ('name = ')
-
+def getCreateCompound(connection, dbCursor, compoundNames):
+    sqlQuery = "SELECT idCompound FROM normdb.tCompound as c LEFT JOIN tCompoundSynonyms ON c.idCompound = tCompoundSynonyms.idCompound WHERE %s OR %s LIMIT 1" % ('name = ', 'synonym =')
     pass
 
 # Try to retrieve an existing medDRA term 
 # SIDER2 shows both a LLT and/or PT for each adverse effect
-def getCreateUpdateMedDRA(connection, cursor, medDRAPT, medDRALLT):
+def getCreateUpdateMedDRA(connection, dbCursor, medDRAPT, medDRALLT):
     pass
